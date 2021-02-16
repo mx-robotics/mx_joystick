@@ -1,6 +1,6 @@
 /**
  * @author Markus Bader <markus.bader@mx-robotics.com>
- * @date February 2021
+ * @date 15th of February 2021
  **/
 
 #include <fcntl.h>
@@ -12,10 +12,10 @@
 
 using namespace mx;
 
-Joystick::Joystick() : js_(-1), update_events_(false) {
+Joystick::Joystick() : js_(-1), event_count_(0), update_events_(false) {
 }
 
-Joystick::Joystick(const std::string &device) : js_(-1), update_events_(false) {
+Joystick::Joystick(const std::string &device) : js_(-1), event_count_(0), update_events_(false) {
     open(device);
 }
 
@@ -54,29 +54,39 @@ size_t Joystick::get_button_count(){
 
 
 int Joystick::read_events() {
+    fd_set set;
+    struct timeval timeout;
+    int rv;
+    
+  
     struct js_event event;
     size_t axis;
-
+    size_t bytes;
     while (update_events_)
     {
-        size_t bytes = read(js_, &event, sizeof(event));
-        if (bytes != sizeof(event))  return -1;
-        switch (event.type)
-        {
-        case JS_EVENT_BUTTON:
-            buttons_[event.number] = event.value;
-            break;
-        case JS_EVENT_AXIS:
-        {
-            uint8_t axis = event.number / 2;
-            if (axis < axes_.size()) {
-                if (event.number % 2 == 0)
-                    axes_[axis].x = event.value;
-                else
-                    axes_[axis].y = event.value;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+        FD_ZERO(&set);      
+        FD_SET(js_, &set); 
+        rv = select(js_ + 1, &set, NULL, NULL, &timeout);
+        if(rv == -1) {
+            // perror("select");
+            return -1;
+        } else if(rv == 0) {
+            //printf("timeout");
+        } else {
+            /// A signal handling needs to be implemented to interrupt read
+                bytes = read(js_, &event, sizeof(event));
+            if (bytes != sizeof(event) )  return -1;
+            event_count_++;
+            switch (event.type) {
+                case JS_EVENT_BUTTON:
+                    buttons_[event.number] = event.value;
+                    break;
+                case JS_EVENT_AXIS:
+                    axes_[event.number] = event.value;
+                    break;
             }
-        }
-        break;
         }
     }
     return 0;
@@ -86,8 +96,13 @@ void Joystick::start() {
     update_events_ = true;
     future_events_ = std::async(std::launch::async, &Joystick::read_events, this);
 }
+
 void Joystick::stop() {
     update_events_ = false;
+}
+
+uint64_t Joystick::event_count() const {
+    return event_count_;
 }
 
 const std::vector<Joystick::Button>  &Joystick::buttons() const {

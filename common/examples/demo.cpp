@@ -36,12 +36,12 @@ int main(int argc, char *argv[]){
         printf("%6zu Buttons: ", loop_count);
         for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %2d",i?",":"", joy.button(i).value);
         printf("; Axis: ");
-        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s (%6d, %6d)", i?",":"", joy.axis(i).x, joy.axis(i).y);
+        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s %6d", i?",":"", joy.axis(i).value);
         printf("\n");
         fflush(stdout);
     }
     
-    joy.stop(); 
+    joy.stop(); /// stops and waits for one button to press
     
 
     return 0;

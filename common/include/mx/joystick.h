@@ -20,10 +20,11 @@ public:
      */
     class Axis {
     public:
-        Axis():x(0), y(0) {}
-        Axis(short x, short y):x(x), y(y) {}
-        short x, y;
+        Axis():value(0) {}
+        Axis(short value):value(value) {}
+        short value;
     };
+
     /**
      * Current state of a button.
      */
@@ -117,6 +118,11 @@ public:
      */
     const Axis &axis(size_t i) const;
     
+    /**
+     * event count counts button or axis events
+     * @return event counter 
+     */
+    uint64_t event_count() const;
 private:
     
     
@@ -129,6 +135,7 @@ private:
     int read_events();
     
     int js_;                             /// file descriptor for the joystick device, or -1 on error.
+    uint64_t event_count_;               /// event count updated on every joy event
     bool update_events_;                 /// on true read_events() will block
     std::vector<Axis> axes_;             /// axes state
     std::vector<Button> buttons_;        /// buttons state
