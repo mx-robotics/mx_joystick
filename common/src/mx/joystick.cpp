@@ -12,10 +12,10 @@
 
 using namespace mx;
 
-Joystick::Joystick() : js_(-1), event_count_(0), update_events_(false) {
+Joystick::Joystick() : js_(-1), update_events_(false) {
 }
 
-Joystick::Joystick(const std::string &device) : js_(-1), event_count_(0), update_events_(false) {
+Joystick::Joystick(const std::string &device) : js_(-1), update_events_(false) {
     open(device);
 }
 
@@ -78,7 +78,8 @@ int Joystick::read_events() {
             /// A signal handling needs to be implemented to interrupt read
                 bytes = read(js_, &event, sizeof(event));
             if (bytes != sizeof(event) )  return -1;
-            event_count_++;
+            values_.event_id++;
+            std::scoped_lock<std::mutex> lock(mutex_values_);
             switch (event.type) {
                 case JS_EVENT_BUTTON:
                     values_.buttons[event.number] = event.value;
@@ -101,17 +102,12 @@ void Joystick::stop() {
     update_events_ = false;
 }
 
-uint64_t Joystick::event_count() const {
-    return event_count_;
-}
-
 Joystick::Values Joystick::values() const {
     // a mutex can help if there are problems
     return values_;
 }
 Joystick::Values &Joystick::values(Joystick::Values &des) const {
-    // a mutex can help if there are problems
-    des.axes = values_.axes;
-    des.buttons = values_.buttons;
+    std::scoped_lock<std::mutex> lock(mutex_values_);
+    des = values_;
     return des;
 }

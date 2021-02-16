@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     
     mx::Joystick joy;
     if(joy.open(device) == -1) {
-        printf("Could not open joystick");
+        std::cout << "Could not open joystick: " << device << std::endl;
         return 0;
     };
 
@@ -40,14 +40,9 @@ int main(int argc, char *argv[]){
 
     mx::Joystick::Values joystick;
     for(size_t loop_count = 0; gSignalStatus == 0;  loop_count++){
-        usleep(1000); 
+        usleep(100000);
         joy.values(joystick);
-        printf("%6zu - ", joy.event_count());
-        for(size_t i = 0; i < joystick.buttons.size(); i++) printf("%s %2d",i?",":"Buttons: ", joystick.buttons[i]);
-        printf(" - ");
-        for(size_t i = 0; i < joystick.axes.size(); i++) printf("%s %6d", i?",":"Axis: ", joystick.axes[i]);
-        printf("\n");
-        fflush(stdout);
+        std::cout << std::setw( 6 ) << joystick << std::endl;
     }
     
     joy.stop(); /// stops and waits for a timeout on the joy device
@@ -55,8 +50,6 @@ int main(int argc, char *argv[]){
 
     return 0;
 }
-
-
 ```
 
 ## Install

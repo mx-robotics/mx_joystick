@@ -7,6 +7,9 @@
 
 #include <vector>
 #include <future>
+#include <mutex>
+#include <iostream>
+#include <iomanip>
 
 namespace mx {
 /**
@@ -20,8 +23,28 @@ public:
      */
     class Values {
     public:
-        std::vector<short> axes;           /// axes state
-        std::vector<short> buttons;        /// buttons state
+        Values(): event_id(0){
+        }
+        Values(const Values &v)
+        : event_id(v.event_id), buttons(v.buttons), axes(v.axes) {
+        }
+        uint64_t event_id;                   /// event id
+        std::vector<short> buttons;          /// buttons state
+        std::vector<short> axes;             /// axes state
+        float axis(size_t i) const {
+            return ((float) axes[i]) / ((float) std::numeric_limits<short>::max());
+        }
+        bool button(size_t i) const {
+            return (buttons[i] > 0);
+        }
+        friend std::ostream &operator << ( std::ostream &os, const Values &o ) {
+            os << "event: " << std::setw( 6 ) << o.event_id;
+            for(size_t i = 0; i < o.buttons.size(); i++) os << (i?", ":"; buttons: ") << o.button(i);
+            for(size_t i = 0; i < o.axes.size(); i++) {
+                os << (i?", ":"; axes: ") << std::fixed << std::setw(4) << std::setprecision(2) << o.axis(i);
+            }
+            return os;
+        };
     };
 
     /**
@@ -93,11 +116,6 @@ public:
      */
     Values &values(Values &des) const;
     
-    /**
-     * event count counts button or axis events
-     * @return event counter 
-     */
-    uint64_t event_count() const;
 private:
     
     
@@ -110,10 +128,10 @@ private:
     int read_events();
     
     int js_;                             /// file descriptor for the joystick device, or -1 on error.
-    uint64_t event_count_;               /// event count updated on every joy event
     bool update_events_;                 /// on true read_events() will block
     Values values_;                      /// joystick state
     std::future<int> future_events_;     /// future on the read_events() async with result of Joystick::read_events
+    mutable std::mutex mutex_values_;    /// mutex on values
 };
 };
 #endif // MX_JOYSTICK_H
