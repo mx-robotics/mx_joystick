@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
         fflush(stdout);
     }
     
-    joy.stop(); /// stops and waits for one button to press
+    joy.stop(); /// stops and waits for a timeout on the joy device
     
 
     return 0;

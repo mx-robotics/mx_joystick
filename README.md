@@ -40,10 +40,6 @@ target_link_libraries(your_target ${MXJoystick_LIBRARIES})
 
 ## example
 ```
-/**
- * @author Markus Bader <markus.bader@mx-robotics.com>
- * @date 15th of February 2021
- **/
 
 #include <csignal>
 #include <unistd.h>
@@ -75,17 +71,19 @@ int main(int argc, char *argv[]){
 
     for(size_t loop_count = 0; gSignalStatus == 0;  loop_count++){
         usleep(1000);
-        printf("%6zu Buttons: ", loop_count);
+        printf("%6zu Buttons: ", joy.event_count());
         for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %2d",i?",":"", joy.button(i).value);
         printf("; Axis: ");
-        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s (%6d, %6d)", i?",":"", joy.axis(i).x, joy.axis(i).y);
+        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s %6d", i?",":"", joy.axis(i).value);
         printf("\n");
         fflush(stdout);
     }
     
-    joy.stop(); 
+    joy.stop(); /// stops and waits for a timeout on the joy device
     
 
     return 0;
 }
+
+
 ```
