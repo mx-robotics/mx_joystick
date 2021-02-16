@@ -4,34 +4,51 @@ __Features:__
 - simple interface
 - threaded
 - device timeout
+
 ## Install
-```
+### Simple
+```shell
 git clone https://github.com/mx-robotics/mx_joystick.git
 cd mx_joystick
 mkdir build
 cd build
 cmake ..
-# If you like it somewhere else
-# export INSTALL_PREFIX=/opt/mx_joystick/
-# cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX .. 
-# # extend the ld search path
-# sudo sh -c "echo $INSTALL_PREFIX/lib > /etc/ld.so.conf.d/mx_joystick.conf"
-# sudo ldconfig
-# # make cmake config avaliable
-# echo "export MXJoystick_DIR=$INSTALL_PREFIX/lib/CMake/MXJoystick" >> ~/.bashrc
 make 
- ./common/examples/mx_demo_joystick /dev/input/js0 # for testing
 sudo make install
+```
+### Installation into a spezific folder
+```shell
+# devine installation forder
+export INSTALL_PREFIX=/opt/mx_joystick/
+git clone https://github.com/mx-robotics/mx_joystick.git
+cd mx_joystick
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX .. 
+# extend the ld search path
+sudo sh -c "echo $INSTALL_PREFIX/lib > /etc/ld.so.conf.d/mx_joystick.conf"
+sudo ldconfig
+# make cmake config avaliable
+echo "export MXJoystick_DIR=$INSTALL_PREFIX/lib/CMake/MXJoystick" >> ~/.bashrc
+make 
+sudo make install
+```
+### Test
+
+```shell
+ ./common/examples/mx_demo_joystick /dev/input/js0 # for testing
+
 ```
 ## Uninstall
 Be careful on this!
-```
+```shell
 export INSTALL_PREFIX=/usr/local/ # for Ubuntu
 rm $INSTALL_PREFIX/lib/CMake/MXJoystick/MXJoystick*.cmake
 rm $INSTALL_PREFIX/include/mx/joystick.h
 rm $INSTALL_PREFIX/lib/libmx_joystick.a
 rm $INSTALL_PREFIX/bin/mx_demo_joystick
 ```
+
 ## Usage with cmake
 Add the following statements to your CMakeLists.txt
 ```
@@ -43,9 +60,10 @@ target_link_libraries(your_target ${MXJoystick_LIBRARIES})
 
 ```
 
-## example
-```
+## Example
 
+
+```cpp
 #include <csignal>
 #include <unistd.h>
 #include <mx/joystick.h>
