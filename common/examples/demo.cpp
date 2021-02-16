@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 
     for(size_t loop_count = 0; gSignalStatus == 0;  loop_count++){
         usleep(1000);
-        printf("%6zu Buttons: ", loop_count);
+        printf("%6zu Buttons: ", joy.event_count());
         for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %2d",i?",":"", joy.button(i).value);
         printf("; Axis: ");
         for(size_t i = 0; i < joy.axes().size(); i++) printf("%s %6d", i?",":"", joy.axis(i).value);
