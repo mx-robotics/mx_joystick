@@ -12,15 +12,15 @@
 
 using namespace mx;
 
-Joystick::Joystick() : js_(0), update_events_(false) {
+Joystick::Joystick() : js_(-1), update_events_(false) {
 }
 
-Joystick::Joystick(const std::string &device) : js_(0), update_events_(false) {
-    init(device);
+Joystick::Joystick(const std::string &device) : js_(-1), update_events_(false) {
+    open(device);
 }
 
-int Joystick::init(const std::string &device) {
-    js_ = open(device.c_str(), O_RDONLY);
+int Joystick::open(const std::string &device) {
+    js_ = ::open(device.c_str(), O_RDONLY);
     if (js_ == -1) {
         return js_;
     }
@@ -30,21 +30,23 @@ int Joystick::init(const std::string &device) {
     return js_;
 }
 
-Joystick::~Joystick() {
-    stop();
-    close(js_);
+
+void Joystick::close() {
+    if(js_ != -1)  ::close(js_);
 }
 
-size_t Joystick::get_axis_count()
-{
-    __u8 nr_of_axes;
+Joystick::~Joystick() {
+    close();
+}
+
+size_t Joystick::get_axis_count(){
+    uint8_t nr_of_axes;
     if (ioctl(js_, JSIOCGAXES, &nr_of_axes) == -1) return 0;
     return nr_of_axes;
 }
 
-size_t Joystick::get_button_count()
-{
-    __u8 nr_of_buttons;
+size_t Joystick::get_button_count(){
+    uint8_t nr_of_buttons;
     if (ioctl(js_, JSIOCGBUTTONS, &nr_of_buttons) == -1)  return 0;
     return nr_of_buttons;
 }
@@ -66,7 +68,7 @@ int Joystick::read_events() {
             break;
         case JS_EVENT_AXIS:
         {
-            __u8 axis = event.number / 2;
+            uint8_t axis = event.number / 2;
             if (axis < axes_.size()) {
                 if (event.number % 2 == 0)
                     axes_[axis].x = event.value;
@@ -87,7 +89,6 @@ void Joystick::start() {
 void Joystick::stop() {
     update_events_ = false;
 }
-
 
 const std::vector<Joystick::Button>  &Joystick::buttons() const {
     return buttons_;

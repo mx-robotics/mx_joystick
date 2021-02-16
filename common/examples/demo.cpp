@@ -1,13 +1,19 @@
 /**
  * @author Markus Bader <markus.bader@mx-robotics.com>
- * @date February 2021
+ * @date 15th of February 2021
  **/
 
+#include <csignal>
 #include <unistd.h>
 #include <mx/joystick.h>
 
-int main(int argc, char *argv[])
-{
+volatile std::sig_atomic_t gSignalStatus;
+void signal_handler ( int signal ){
+    gSignalStatus = signal;
+}
+
+int main(int argc, char *argv[]){
+    std::signal ( SIGINT, signal_handler );
     std::string device;
 
     if (argc > 1) {
@@ -15,25 +21,28 @@ int main(int argc, char *argv[])
     } else {
         device = std::string("/dev/input/js0");
     }
+    
     mx::Joystick joy;
-    if(joy.init(device) == -1) {
+    if(joy.open(device) == -1) {
         printf("Could not open joystick");
         return 0;
     };
 
 
-    /* This loop will exit if the controller is unplugged. */
     joy.start();
 
-    while(true) {
+    for(size_t loop_count = 0; gSignalStatus == 0;  loop_count++){
         usleep(1000);
-        printf("Buttons: ");
-        for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %zu: %2d",i?",":"", i, joy.button(i).value);
-        printf("\nAxis: ");
-        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s %zu: (%6d, %6d)", i?",":"", i, joy.axis(i).x, joy.axis(i).y);
+        printf("%6zu Buttons: ", loop_count);
+        for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %2d",i?",":"", joy.button(i).value);
+        printf("; Axis: ");
+        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s (%6d, %6d)", i?",":"", joy.axis(i).x, joy.axis(i).y);
         printf("\n");
         fflush(stdout);
     }
+    
+    joy.stop(); 
+    
 
     return 0;
 }

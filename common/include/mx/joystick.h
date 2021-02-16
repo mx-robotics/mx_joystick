@@ -51,11 +51,16 @@ public:
     ~Joystick();
     
     /**
-     * init device
+     * opens device
      * @param device 
      * @return file descriptor for the joystick device, or -1 on error.
      */
-    int init(const std::string &device);    
+    int open(const std::string &device);   
+    
+    /**
+     * closes device
+     */
+    void close();    
 
     /**
      * Returns the number of axes on the controller or 0 if an error occurs.
@@ -78,7 +83,7 @@ public:
     void start();
     
     /**
-     * stop pulling events
+     * stop pulling events after the next event
      * @pre Joystick::start
      */
     void stop();
