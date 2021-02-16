@@ -31,12 +31,14 @@ int main(int argc, char *argv[]){
 
     joy.start();
 
+    mx::Joystick::Values joystick;
     for(size_t loop_count = 0; gSignalStatus == 0;  loop_count++){
-        usleep(1000);
-        printf("%6zu Buttons: ", joy.event_count());
-        for(size_t i = 0; i < joy.buttons().size(); i++) printf("%s %2d",i?",":"", joy.button(i).value);
-        printf("; Axis: ");
-        for(size_t i = 0; i < joy.axes().size(); i++) printf("%s %6d", i?",":"", joy.axis(i).value);
+        usleep(1000); 
+        joy.values(joystick);
+        printf("%6zu - ", joy.event_count());
+        for(size_t i = 0; i < joystick.buttons.size(); i++) printf("%s %2d",i?",":"Buttons: ", joystick.buttons[i]);
+        printf(" - ");
+        for(size_t i = 0; i < joystick.axes.size(); i++) printf("%s %6d", i?",":"Axis: ", joystick.axes[i]);
         printf("\n");
         fflush(stdout);
     }

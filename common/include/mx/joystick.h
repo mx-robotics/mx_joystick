@@ -16,23 +16,12 @@ class Joystick {
 public:
 
     /**
-     * Current state of an axis.
+     * Joystick values
      */
-    class Axis {
+    class Values {
     public:
-        Axis():value(0) {}
-        Axis(short value):value(value) {}
-        short value;
-    };
-
-    /**
-     * Current state of a button.
-     */
-    class Button {
-    public:
-        Button():value(0) {}
-        Button(short value):value(value) {}
-        short value;
+        std::vector<short> axes;           /// axes state
+        std::vector<short> buttons;        /// buttons state
     };
 
     /**
@@ -90,33 +79,19 @@ public:
     void stop();
 
     /**
-     * buttons
+     * joystick state
      * @pre Joystick::start
-     * @return buttons vector
+     * @return buttons and axis values
      */
-    const std::vector<Button>  &buttons() const;
-    /**
-     * button entry
-     * @pre Joystick::start
-     * @param i button index
-     * @return button object
-     */
-    const Button  &button(size_t i) const;
+    Values values() const;
     
     /**
-     * Axes
+     * joystick state
      * @pre Joystick::start
-     * @param i axis index
-     * @return axes vector
+     * @param des destination to copy the values to
+     * @return buttons and axis values
      */
-    const std::vector<Axis> &axes() const;
-    
-    /**
-     * Axis entry
-     * @pre Joystick::start
-     * @return axis object
-     */
-    const Axis &axis(size_t i) const;
+    Values &values(Values &des) const;
     
     /**
      * event count counts button or axis events
@@ -137,8 +112,7 @@ private:
     int js_;                             /// file descriptor for the joystick device, or -1 on error.
     uint64_t event_count_;               /// event count updated on every joy event
     bool update_events_;                 /// on true read_events() will block
-    std::vector<Axis> axes_;             /// axes state
-    std::vector<Button> buttons_;        /// buttons state
+    Values values_;                      /// joystick state
     std::future<int> future_events_;     /// future on the read_events() async with result of Joystick::read_events
 };
 };

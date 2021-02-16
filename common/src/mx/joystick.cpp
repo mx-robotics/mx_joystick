@@ -25,8 +25,8 @@ int Joystick::open(const std::string &device) {
         return js_;
     }
 
-    axes_.resize(get_axis_count());
-    buttons_.resize(get_button_count());
+    values_.axes.resize(get_axis_count());
+    values_.buttons.resize(get_button_count());
     return js_;
 }
 
@@ -81,10 +81,10 @@ int Joystick::read_events() {
             event_count_++;
             switch (event.type) {
                 case JS_EVENT_BUTTON:
-                    buttons_[event.number] = event.value;
+                    values_.buttons[event.number] = event.value;
                     break;
                 case JS_EVENT_AXIS:
-                    axes_[event.number] = event.value;
+                    values_.axes[event.number] = event.value;
                     break;
             }
         }
@@ -105,16 +105,13 @@ uint64_t Joystick::event_count() const {
     return event_count_;
 }
 
-const std::vector<Joystick::Button>  &Joystick::buttons() const {
-    return buttons_;
+Joystick::Values Joystick::values() const {
+    // a mutex can help if there are problems
+    return values_;
 }
-const Joystick::Button  &Joystick::button(size_t i) const {
-    return buttons_[i];
+Joystick::Values &Joystick::values(Joystick::Values &des) const {
+    // a mutex can help if there are problems
+    des.axes = values_.axes;
+    des.buttons = values_.buttons;
+    return des;
 }
-const std::vector<Joystick::Axis> &Joystick::axes() const {
-    return axes_;
-}
-const Joystick::Axis &Joystick::axis(size_t i) const {
-    return axes_[i];
-}
-
