@@ -125,8 +125,6 @@ public:
     int get(Values &des) const;
 private:
     
-private:
-    
     
     /**
      * blocking function to read joystick events
