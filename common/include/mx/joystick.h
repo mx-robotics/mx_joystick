@@ -116,6 +116,15 @@ public:
      */
     Values &values(Values &des) const;
     
+    /**
+     * joystick state and a return value if a button was pressed since last time getting values
+     * @pre Joystick::start
+     * @param des destination to copy the values. The evnet id is used to compute the event differnce on the return
+     * @return number of events since last time getting data to des
+     */
+    int get(Values &des) const;
+private:
+    
 private:
     
     

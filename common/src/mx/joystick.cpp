@@ -111,3 +111,9 @@ Joystick::Values &Joystick::values(Joystick::Values &des) const {
     des = values_;
     return des;
 }
+int Joystick::get(Joystick::Values &des) const {
+    std::scoped_lock<std::mutex> lock(mutex_values_);
+    int diff = values_.event_id - des.event_id;
+    des = values_;
+    return diff;
+}
