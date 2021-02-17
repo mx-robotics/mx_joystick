@@ -123,6 +123,14 @@ public:
      * @return number of events since last time getting data to des
      */
     int get(Values &des) const;
+    
+    /**
+     * future on the event checking thread
+     * useful to check if stop was successfull
+     * @pre start, stop
+     * @return future
+     */
+    const std::future<int> &get_future();
 private:
     
     

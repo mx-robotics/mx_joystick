@@ -117,3 +117,7 @@ int Joystick::get(Joystick::Values &des) const {
     des = values_;
     return diff;
 }
+
+const std::future<int> &Joystick::get_future() {
+    return future_events_;
+}
