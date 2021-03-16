@@ -89,11 +89,7 @@ sudo make install
 ## Uninstall
 Be careful on this!
 ```shell
-export INSTALL_PREFIX=/usr/local/ # for Ubuntu
-rm $INSTALL_PREFIX/lib/CMake/MXJoystick/MXJoystick*.cmake
-rm $INSTALL_PREFIX/include/mx/joystick.h
-rm $INSTALL_PREFIX/lib/libmx_joystick.a
-rm $INSTALL_PREFIX/bin/mx_demo_joystick
+sudo make uninstall
 ```
 
 ## Usage with cmake
@@ -101,6 +97,7 @@ Add the following statements to your CMakeLists.txt
 ```
 ...
 find_package(MXJoystick REQUIRED)
+include_directories(${MXJoystick_INCLUDE_DIRS})
 ...
 target_link_libraries(your_target ${MXJoystick_LIBRARIES})
 ...
