@@ -66,17 +66,17 @@ sudo make install
 ### Installation into a spezific folder
 ```shell
 # devine installation forder
-export INSTALL_PREFIX=/opt/mx_joystick/
+export MXJoystick_INSTALL_PREFIX=/opt/mxr
 git clone https://github.com/mx-robotics/mx_joystick.git
 cd mx_joystick
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX .. 
+cmake -DCMAKE_INSTALL_PREFIX=$MXJoystick_INSTALL_PREFIX .. 
 # extend the ld search path
-sudo sh -c "echo $INSTALL_PREFIX/lib > /etc/ld.so.conf.d/mx_joystick.conf"
+sudo sh -c "echo $MXJoystick_INSTALL_PREFIX/lib > /etc/ld.so.conf.d/mx_joystick.conf"
 sudo ldconfig
 # make cmake config avaliable
-echo "export MXJoystick_DIR=$INSTALL_PREFIX/lib/CMake/MXJoystick" >> ~/.bashrc
+echo "export MXJoystick_DIR=$MXJoystick_INSTALL_PREFIX/lib/CMake" >> ~/.bashrc
 make 
 sudo make install
 ```
